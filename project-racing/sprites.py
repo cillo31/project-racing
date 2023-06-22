@@ -4,7 +4,7 @@ from assets import *
 car = PlayerSprite('res/car-up.png',75,300,7)
 
 #single sprites
-trophy = Sprite('res/1st-position.png',50,250,0)
+trophy = Sprite('res/1st-position.png',75,225,0)
 
 #sprite 16 bombas para mapa 1
 bombs = [
