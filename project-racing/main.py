@@ -1,20 +1,29 @@
 from pygame import*
 from sprites import*
 
-display.set_caption('SUNRIDE')
+display.set_caption('ARCADE SUNRIDER')
 clock = time.Clock()
 
-#contador de vueltas
+#lap counter
 lap_count = 0
 
-#Bucle principal del juego
-running = True
-last_update = time.get_ticks()
-last_update2 = time.get_ticks() 
-cooldown = 100
-trophy_cooldown = 10000
-frame_index = 0
+#cooldowns
+start_cooldown = 3000
+frame_cooldown = 100
+lap_cooldown = 10000
 
+#update timers
+start_update = time.get_ticks()
+go_update = time.get_ticks()
+last_lap = time.get_ticks()
+last_trophy = time.get_ticks()
+last_bomb = time.get_ticks()
+
+#press key to start
+k = key.get_pressed()
+
+#MAIN GAME LOOP
+running = True
 while running:
     #frames per second
     clock.tick(30)
@@ -23,30 +32,91 @@ while running:
     for e in event.get():
         if e.type == QUIT:
             running = False
+
+    if k[K_RETURN] or k[K_SPACE]:
+        window.fill((0,0,0))
+        window.blit(background,(0,0))
+
+        #go indicator animation
+        if lap_count == 0:
+            go.animate(go_animation, current_time, go_update, frame_cooldown, 100, 100)
+
+        #bombs sprite update & collision
+        for b in bombs:
+            b.animate(bomb_animation,current_time,last_bomb,frame_cooldown)
+
+            #gameover: explosion
+            if sprite.collide_rect(b, car):
+                window.blit(gameover_explosion,(0,0))
+                display.update()
+                time.delay(3000)
+                running = False
         
-    window.fill((0,0,0))
-    window.blit(background,(0,0))
-    
-    #bombs sprite update & collision
-    if current_time - last_update >= cooldown:
-        frame_index += 1
-        if frame_index >= len(bomb_animation):
-            frame_index = 0
-        current_image = bomb_animation[frame_index]
-        last_update = current_time
+        #trophy sprite animation
+        if lap_count == 3:
+            #last lap indicator
+            final_lap.reset()
+            
+            #last lap trophy sprite
+            trophy.animate(trophy_animation,current_time,last_trophy,frame_cooldown)
 
-    for b in bombs:
-        b.update_img(bomb_animation[frame_index])
-        b.reset()
+        #trophy collision & lap increment
+        if sprite.collide_rect(trophy, car):
+            if lap_count == 0:
+                lap_count = 1
+                last_lap = current_time
+            else:
+                if current_time - last_lap >= lap_cooldown:
+                    lap_count += 1
+                    last_lap = current_time
+            
+            #gameover: winner
+            if lap_count > 3:
+                window.blit(gameover_winner, (0, 0))
+                display.update()
+                time.delay(3000)
+                running = False
 
-        if sprite.collide_rect(b, car):
-            gameover = transform.scale(image.load('res/gameover-explosion.jpg'), (win_width, win_height))
-            window.blit(gameover,(0,0))
+        if lap_count != 0:
+            #lap counter
+            lap = image.load(laps[lap_count])
+            window.blit(lap, (50, 20))
+
+        '''if lap_count == 1:
+            #screen timer
+            start_time = time.get_ticks()
+            timer = Timer(start_time, win_width - 100, 25)'''
+
+        #gameover: out of bounds
+        if car.rect.x < 0 or car.rect.x > win_width or car.rect.y < 0 or car.rect.y > win_height:
+            window.blit(gameover_outbounds,(0,0))
             display.update()
             time.delay(3000)
             running = False
-    
-    #colision con paredes
+        
+        #mantiene dibujados los sprites en pantalla
+        car.update()
+        car.reset()
+        trophy.reset()
+        '''if timer
+            timer.reset()'''
+
+    else:
+        #load screen
+        window.fill((0,0,0))
+        window.blit(load_screen,(0,0))
+
+        if current_time >= start_cooldown:
+            #press to start button animation
+            press_start.animate(press_start_animation,current_time,start_update,start_cooldown)
+            
+            k = key.get_pressed()
+
+    display.update()
+
+
+
+    #walls collision
     '''v = 0
     for w in walls:
         if sprite.collide_rect(w, car):
@@ -55,51 +125,3 @@ while running:
             car.set_speed(self.speed)
         else:
             car.set_speed(self.speed//2)'''
-    
-    #colision con el trofeo
-    current_time2 = time.get_ticks()
-    if sprite.collide_rect(trophy, car):
-        if lap_count != 0:
-            if current_time2 - last_update2 >= trophy_cooldown:
-                lap_count += 1
-                if lap_count == 3:
-                    trophy.update_img('res/trophy.png')
-                    trophy.reset()
-                if lap_count > 3:
-                    winner = transform.scale(image.load('res/gameover-winner.jpg'), (win_width, win_height))
-                    window.blit(winner, (0, 0))
-                    display.update()
-                    time.delay(3000)
-                    running = False
-                last_update2 = current_time2
-        else:
-            lap_count+=1
-
-    #gameover out of bounds
-    if car.rect.x < 0 or car.rect.x > win_width or car.rect.y < 0 or car.rect.y > win_height:
-        gameover = transform.scale(image.load('res/gameover-outbounds.jpg'), (win_width, win_height))
-        window.blit(gameover,(0,0))
-        display.update()
-        time.delay(3000)
-        running = False
-
-    if lap_count != 0:
-        laps = image.load('res/lap' + str(lap_count) + '.png')
-        window.blit(laps, (50, 20))
-
-        '''#contrareloj en pantalla
-        start_time = time.get_ticks()
-        timer = Timer(start_time, win_width - 100, 25)
-        timer.reset()'''
-
-    if lap_count == 3:
-        final_lap = image.load('res/finallap.png')
-        window.blit(final_lap, (win_width // 2 - 100, win_height // 2))
-    
-    #mantiene dibujados los sprites en pantalla
-    car.update()
-    car.reset()
-    trophy.reset()
-    
-
-    display.update()
