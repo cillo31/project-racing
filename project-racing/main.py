@@ -62,24 +62,20 @@ while running:
 
         #trophy collision & lap increment
         if sprite.collide_rect(trophy, car):
-            if lap_count == 0:
-                lap_count = 1
+            if current_time - last_lap >= lap_cooldown:
+                lap_count += 1
                 last_lap = current_time
-            else:
-                if current_time - last_lap >= lap_cooldown:
-                    lap_count += 1
-                    last_lap = current_time
             
             #gameover: winner
-            if lap_count > 3:
+            if lap_count > 4:
                 window.blit(gameover_winner, (0, 0))
                 display.update()
                 time.delay(3000)
                 running = False
 
-        if lap_count != 0:
+        if lap_count != 0 and lap_count < 5:
             #lap counter
-            lap = image.load(laps[lap_count])
+            lap = image.load(laps[lap_count-1])
             window.blit(lap, (50, 20))
 
         '''if lap_count == 1:
