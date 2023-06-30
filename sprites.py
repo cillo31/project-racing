@@ -5,7 +5,9 @@ car = PlayerSprite('res/car/car-up.png',75,300,7)
 
 #single sprites
 trophy = Sprite('res/trophy/1st-position.png',75,225,0)
+
 press_start = Sprite('res/start/press-start1.png',75,600,0)
+map_continue = Sprite('res/start/map-continue1.png',75,850,0)
 go = Sprite('res/start/go1.png',win_width//2-50,win_height//2-50,0)
 final_lap = Sprite('res/lap/finallap.png',win_width//2-100, win_height//2,0)
 
@@ -44,7 +46,22 @@ press_start_animation = [
     'res/start/press-start4.png',
     'res/start/press-start5.png',
     'res/start/press-start6.png',
-    'res/start/press-start7.png'
+    'res/start/press-start7.png',
+    'res/start/press-start8.png',
+    'res/start/press-start9.png',
+    'res/start/press-start10.png'
+]
+map_continue_animation = [
+    'res/start/map-continue1.png',
+    'res/start/map-continue2.png',
+    'res/start/map-continue3.png',
+    'res/start/map-continue4.png',
+    'res/start/map-continue5.png',
+    'res/start/map-continue6.png',
+    'res/start/map-continue7.png',
+    'res/start/map-continue8.png',
+    'res/start/map-continue9.png',
+    'res/start/map-continue10.png',
 ]
 go_animation = [
     'res/start/go1.png',
@@ -103,4 +120,12 @@ checkpointidle_animation = [
     'res/chkp/checkpoint-idle5.png',
     'res/chkp/checkpoint-idle6.png',
     'res/chkp/checkpoint-idle7.png'
+]
+checkpoint_indicator = [
+    'res/chkp/checkpoint-indicator0.png',
+    'res/chkp/checkpoint-indicator1.png',
+    'res/chkp/checkpoint-indicator2.png',
+    'res/chkp/checkpoint-indicator3.png',
+    'res/chkp/checkpoint-indicator4.png',
+    'res/chkp/checkpoint-indicator5.png',
 ]

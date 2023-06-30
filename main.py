@@ -19,6 +19,9 @@ k = key.get_pressed()
 
 #MAIN GAME LOOP
 running = True
+load_screen_done = False
+map_selected = False
+
 while running:
     #frames per second
     clock.tick(30)
@@ -28,18 +31,48 @@ while running:
         if e.type == QUIT:
             running = False
 
-    if k[K_RETURN] or k[K_SPACE]:
-        window.fill((0,0,0))
-        window.blit(background,(0,0))
+    if not load_screen_done:
+        # Load screen
+        window.fill((0, 0, 0))
+        window.blit(load_screen, (0, 0))
 
-        #go indicator animation
+        if current_time >= start_cooldown:
+            # Press to start button animation
+            press_start.animate(press_start_animation, frame_cooldown)
+
+            k = key.get_pressed()
+
+            if k[K_RETURN] or k[K_SPACE]:
+                load_screen_done = True
+
+    elif not map_selected:
+        # Maps selection screen
+        window.fill((0, 0, 0))
+        window.blit(selection_screen, (0, 0))
+
+        if current_time >= start_cooldown:
+            # Select map to continue button animation
+            map_continue.animate(map_continue_animation, frame_cooldown)
+
+        k = key.get_pressed()
+
+        if k[K_1]:
+            background = maps[0]
+            map_selected = True
+        elif k[K_2]:
+            background = maps[1]
+            map_selected = True
+        elif k[K_3]:
+            background = maps[2]
+            map_selected = True
+
+    else:
+        window.fill((0, 0, 0))
+        window.blit(background, (0, 0))
+
+        #go sprite animation
         if lap_count == 0:
             go.animate(go_animation, frame_cooldown, 100, 100)
-        
-        '''if lap_count == 1:
-            #screen timer
-            start_time = time.get_ticks()
-            timer = Timer(start_time, win_width - 100, 25)'''
         
         #trophy sprite animation
         if lap_count == 3:
@@ -52,6 +85,15 @@ while running:
             #lap counter
             lap = image.load(laps[lap_count-1])
             window.blit(lap, (50, 20))
+
+            #checkpoint indicator
+            chkp = image.load(checkpoint_indicator[checkpoint_count])
+            window.blit(chkp, (390, 20))
+
+            '''#screen timer
+            start_time = time.get_ticks()
+            timer = Timer(start_time, win_width - 100, 25)
+            timer.reset()'''
 
             #bombs sprite update & collision
             for b in bombs:
@@ -105,19 +147,6 @@ while running:
         car.update()
         car.reset()
         trophy.reset()
-        '''if timer
-            timer.reset()'''
-
-    else:
-        #load screen
-        window.fill((0,0,0))
-        window.blit(load_screen,(0,0))
-
-        if current_time >= start_cooldown:
-            #press to start button animation
-            press_start.animate(press_start_animation, frame_cooldown)
-            
-            k = key.get_pressed()
 
     display.update()
 
