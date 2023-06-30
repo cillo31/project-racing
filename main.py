@@ -30,6 +30,9 @@ while running:
     for e in event.get():
         if e.type == QUIT:
             running = False
+        
+        if e.type == KEYUP:
+            car.speed = 5
 
     if not load_screen_done:
         # Load screen

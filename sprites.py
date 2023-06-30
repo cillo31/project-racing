@@ -1,7 +1,7 @@
 from assets import *
 
 #Player character
-car = PlayerSprite('res/car/car-up.png',75,300,7)
+car = PlayerSprite('res/car/car-up.png',75,300,5)
 
 #single sprites
 trophy = Sprite('res/trophy/1st-position.png',75,225,0)

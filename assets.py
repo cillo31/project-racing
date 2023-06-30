@@ -1,5 +1,10 @@
 from maps import*
 
+MAX_SPEED = 10
+
+def lerp(value, target, alpha):
+    return value + (target - value) * alpha
+
 class Sprite():
     def __init__(self, img, x, y, speed):
         self.img = image.load(img)
@@ -33,7 +38,10 @@ class Sprite():
 class PlayerSprite(Sprite):
     def update(self):
         keys = key.get_pressed()
+        alpha = 0.1  # Valor de interpolación
+
         if keys[K_UP]:
+            self.speed = lerp(self.speed, MAX_SPEED, alpha)
             self.rect.y -= self.speed
             if keys[K_LEFT]:
                 self.rect.x -= self.speed
@@ -45,6 +53,7 @@ class PlayerSprite(Sprite):
                 self.update_img('res/car/car-up.png')
 
         elif keys[K_DOWN]:
+            self.speed = lerp(self.speed, MAX_SPEED, alpha)
             self.rect.y += self.speed
             if keys[K_LEFT]:
                 self.rect.x -= self.speed
@@ -56,10 +65,12 @@ class PlayerSprite(Sprite):
                 self.update_img('res/car/car-down.png')
         
         elif keys[K_LEFT] and not keys[K_UP] and not keys[K_DOWN]:
+            self.speed = lerp(self.speed, MAX_SPEED, alpha)
             self.rect.x -= self.speed
             self.update_img('res/car/car-left2.png')
         
         elif keys[K_RIGHT] and not keys[K_UP] and not keys[K_DOWN]:
+            self.speed = lerp(self.speed, MAX_SPEED, alpha)
             self.rect.x += self.speed
             self.update_img('res/car/car-right2.png')
 
