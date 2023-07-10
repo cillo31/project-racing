@@ -60,13 +60,13 @@ while running:
         k = key.get_pressed()
 
         if k[K_1]:
-            background = maps[0]
+            background,bombs,checkpoints,checkpoint_indicator = maps[0],bombs[0],checkpoints[0],checkpoint_indicator[0]
             map_selected = True
         elif k[K_2]:
-            background = maps[1]
+            background,bombs,checkpoints,checkpoint_indicator = maps[1],bombs[1],checkpoints[1],checkpoint_indicator[1]
             map_selected = True
         elif k[K_3]:
-            background = maps[2]
+            background,bombs,checkpoints,checkpoint_indicator = maps[2],bombs[2],checkpoints[2],checkpoint_indicator[2]
             map_selected = True
 
     else:
@@ -117,7 +117,7 @@ while running:
                 if not c.collision:
                     c.animate(checkpoint_animation, frame_cooldown)
                     if sprite.collide_rect(c, car):
-                        if checkpoint_count != 5:
+                        if checkpoint_count != len(checkpoints):
                             checkpoint_count += 1
                             c.collision = True
                 else:
@@ -128,7 +128,7 @@ while running:
             if lap_count == 0:
                 lap_count += 1
             else:
-                if checkpoint_count >= 5:
+                if checkpoint_count >= len(checkpoints):
                     lap_count += 1
                     checkpoint_count = 0
             
