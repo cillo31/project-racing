@@ -133,11 +133,6 @@ chkp_indicator3 = [
     'res/chkp/map3-ci7.png'
 ]
 
-#sprites list to work with differents maps
-bombs = [bombs1, bombs2, bombs3]
-checkpoints = [checkpoints1, checkpoints2, checkpoints3]
-checkpoint_indicator = [chkp_indicator1, chkp_indicator2, chkp_indicator3]
-
 #animations
 press_start_animation = [
     'res/start/press-start1.png',

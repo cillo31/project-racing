@@ -1,6 +1,7 @@
 from maps import*
 
 MAX_SPEED = 10
+ALPHA = 0.1  # Valor de interpolación
 
 def lerp(value, target, alpha):
     return value + (target - value) * alpha
@@ -18,6 +19,12 @@ class Sprite():
     
     def reset(self):
         window.blit(self.img, (self.rect.x, self.rect.y))
+
+    def reboot(self, img, x, y):
+        self.img = image.load(img)
+        self.rect = self.img.get_rect()
+        self.rect.x = x
+        self.rect.y = y
 
     def update_img(self, img, width=None, height=None):
         if width is None or height is None:
@@ -38,60 +45,65 @@ class Sprite():
 class PlayerSprite(Sprite):
     def update(self):
         keys = key.get_pressed()
-        alpha = 0.1  # Valor de interpolación
 
         if keys[K_UP]:
-            self.speed = lerp(self.speed, MAX_SPEED, alpha)
+            self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
             self.rect.y -= self.speed
             if keys[K_LEFT]:
+                self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
                 self.rect.x -= self.speed
                 self.update_img('res/car/car-left1.png')
             elif keys[K_RIGHT]:
+                self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
                 self.rect.x += self.speed
                 self.update_img('res/car/car-right1.png')
             else:
                 self.update_img('res/car/car-up.png')
 
         elif keys[K_DOWN]:
-            self.speed = lerp(self.speed, MAX_SPEED, alpha)
+            self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
             self.rect.y += self.speed
             if keys[K_LEFT]:
+                self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
                 self.rect.x -= self.speed
                 self.update_img('res/car/car-left3.png')
             elif keys[K_RIGHT]:
+                self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
                 self.rect.x += self.speed
                 self.update_img('res/car/car-right3.png')
             else:
                 self.update_img('res/car/car-down.png')
         
-        elif keys[K_LEFT] and not keys[K_UP] and not keys[K_DOWN]:
-            self.speed = lerp(self.speed, MAX_SPEED, alpha)
+        elif keys[K_LEFT] and not keys[K_DOWN] and not keys[K_UP]:
+            self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
             self.rect.x -= self.speed
             self.update_img('res/car/car-left2.png')
         
-        elif keys[K_RIGHT] and not keys[K_UP] and not keys[K_DOWN]:
-            self.speed = lerp(self.speed, MAX_SPEED, alpha)
+        elif keys[K_RIGHT] and not keys[K_DOWN] and not keys[K_UP]:
+            self.speed = lerp(self.speed, MAX_SPEED, ALPHA)
             self.rect.x += self.speed
             self.update_img('res/car/car-right2.png')
 
 class Timer():
-    def __init__(self, start_time, x, y):
-        self.counting_time = time.get_ticks() - start_time
+    def __init__(self, x, y):
+        self.counting_time = 0
+        self.font = font.SysFont('ubuntu', 32)
+        self.rect = Rect(x, y, 0, 0)
+        self.update_text()
 
-        # change milliseconds into minutes, seconds, milliseconds
-        self.mins = str(self.counting_time/60000).zfill(2)
-        self.secs = str((self.counting_time%60000)/1000).zfill(2)
-        self.mills = str(self.counting_time%1000).zfill(3)
+    def update_text(self):
+        mins = str(self.counting_time // 60000).zfill(2)
+        secs = str((self.counting_time // 1000) % 60).zfill(2)
+        mills = str(self.counting_time % 1000).zfill(3)
+        self.string = f"{mins}:{secs}:{mills}"
+        self.text = self.font.render(self.string, True, (255, 255, 255))
+        self.rect.width, self.rect.height = self.text.get_size()
 
-        self.font = font.Font(None, 32)
-        self.string = "%s:%s:%s" % (self.mins, self.secs, self.mills)
-        self.text = self.font.render(str(self.string), True, (255,255,255))
-        self.rect = self.text.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+    def reset(self, time, current_time):
+        self.counting_time = current_time - time
+        self.update_text()
 
-    def reset(self):
-        window.blit(self.text, (self.rect.x, self.rect.y))
+        window.blit(self.text, self.rect)
 
 class Wall():
     def __init__(self, width, height, x, y):
